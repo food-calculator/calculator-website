@@ -37,3 +37,7 @@ jobs:
           file: Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROJECT }}:latest
+
+      - name: Trigger Watchtower
+        run: |
+          curl -m 7 -s -o /dev/null -H "Authorization: Bearer ${{ secrets.WATCHTOWER_TOKEN }}" ${{ secrets.WATCHTOWER_ADDRESS }} || echo "Update sollte laufen"
