@@ -1,29 +1,22 @@
-# food-calculator-website
+# Food Calculator Website
 
-This template should help get you started developing with Vue 3 in Vite.
+Requires the API server
 
-## Recommended IDE Setup
+➡ <a href="https://github.com/food-calculator/calculator-server">Github Repository</a>
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### Run with docker:
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+1.)
+```shell
+echo '{"API": "https://DOMAIN.IO/api"}' >> /FOLDER/config.json
 ```
 
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
+2.)
+```shell
+docker run -d \
+--name calc-website
+-v /FOLDER/config.json:/usr/share/nginx/html/dist/config.json \
+--restart unless-stoped \
+--network NETWORK_NAME
+fridolin1/food-calculator-server:latest
 ```
