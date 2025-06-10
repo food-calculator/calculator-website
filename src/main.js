@@ -3,6 +3,11 @@ import './assets/main.css'
 import {createApp} from 'vue'
 import App from './App.vue'
 import {createRouter, createWebHashHistory} from "vue-router";
+import {fetchIngredients} from "@/stores/IngredientStore.js";
+import {createPinia} from "pinia";
+import {fetchRecipes} from "@/stores/RecipeStore.js";
+
+const pinia = createPinia()
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -30,4 +35,7 @@ const router = createRouter({
     ]
 })
 
-createApp(App).use(router).mount('#app')
+createApp(App).use(router).use(pinia).mount('#app')
+
+fetchIngredients()
+fetchRecipes()

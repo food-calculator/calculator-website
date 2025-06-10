@@ -12,6 +12,9 @@
     </div>
     <nav>
       <p>
+        <RouterLink to="/">Home</RouterLink>
+      </p>
+      <p>
         <RouterLink to="/ingredients">Zutaten</RouterLink>
       </p>
       <p>
@@ -22,7 +25,7 @@
       </p>
     </nav>
     <main>
-      <h2>Wilkommen zum Essensklakulator</h2>
+      <RouterView/>
     </main>
   </div>
 </template>
