@@ -57,6 +57,7 @@ export default {
     <tr v-for="ingredient in this.ingredients">
       <td>{{ ingredient.name }}</td>
       <td>{{ ingredient.unit }}</td>
+      <td>🗑️</td>
     </tr>
     <tr>
       <td><input type="text" placeholder="Name" v-model="ingredientName"></td>
@@ -85,6 +86,17 @@ th {
 td {
   border-bottom: 1px solid var(--color-border);
   text-align: center;
+}
+
+tr:not(:last-child) td:last-child {
+  border: none;
+  visibility: hidden;
+  background: var(--color-background);
+  cursor: pointer;
+}
+
+tr:hover td:last-child {
+  visibility: visible;
 }
 
 td:first-child, th:first-child {
