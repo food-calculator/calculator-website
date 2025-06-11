@@ -20,6 +20,10 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: Create default config
+        run: |
+          echo "{'API':  'https://calc.bitea.de/api'}" > /src/config.json 
+
       - name: Build project
         run: npm run build
 
