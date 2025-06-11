@@ -90,7 +90,7 @@ export default {
     <tr v-for="ingredient in this.ingredients">
       <td>{{ ingredient.name }}</td>
       <td>{{ ingredient.unit }}</td>
-      <td @click="requestDelete(ingredient.id)">🗑️</td>
+      <td class="deleteButton" @click="requestDelete(ingredient.id)">🗑️</td>
     </tr>
     <tr>
       <td><input type="text" placeholder="Name" v-model="ingredientName"></td>
@@ -99,60 +99,28 @@ export default {
     </tbody>
   </table>
   <button @click="submit">Speichern</button>
-  <MCDialog v-if="this.deleteDialog" :message="this.deleteMessage" :options="[{display: 'Ja', action: 'delete'}, {display: 'Nein', action: 'keep'}]"
+  <MCDialog v-if="this.deleteDialog" :message="this.deleteMessage"
+            :options="[{display: 'Ja', action: 'delete'}, {display: 'Nein', action: 'keep'}]"
             :forward-param="this.deleteID" :action="this.delete"/>
 </template>
 
 <style scoped>
-h2 {
-  text-align: center;
-}
+@import "@/assets/views.css";
 
-table {
-  margin: auto;
-  border-collapse: collapse;
-}
-
-th {
-  border-bottom: 2px solid var(--color-border);
-  text-align: center;
-}
-
-td {
-  border-bottom: 1px solid var(--color-border);
-  text-align: center;
-}
-
-tr:not(:last-child) td:last-child {
+.deleteButton {
   border: none;
   visibility: hidden;
   background: var(--color-background);
   cursor: pointer;
 }
 
-tr:not(:last-child) td:last-child:hover {
+.deleteButton:hover {
   color: transparent;
   text-shadow: 0 0 0 red;
 }
 
-tr:hover td:last-child {
+tr:hover .deleteButton {
   visibility: visible;
-}
-
-td:first-child, th:first-child {
-  padding-left: 5px;
-}
-
-td:last-child, th:last-child {
-  padding-right: 5px;
-}
-
-tbody tr:hover {
-  background: var(--color-background-soft);
-}
-
-tr:last-child td {
-  border: none
 }
 
 input, button {
