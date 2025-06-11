@@ -34,3 +34,13 @@ th:last-child {
 tbody tr:hover {
     background: var(--color-background-soft);
 }
+
+input, button {
+    background: var(--color-background);
+    color: var(--color-text);
+    border-color: var(--color-border);
+}
+
+input:hover, button:hover {
+    border-color: var(--color-border-hover);
+}

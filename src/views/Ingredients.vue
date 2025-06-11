@@ -123,19 +123,9 @@ tr:hover .deleteButton {
   visibility: visible;
 }
 
-input, button {
-  background: var(--color-background);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
 button {
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-}
-
-input:hover, button:hover {
-  border-color: var(--color-border-hover);
 }
 </style>
