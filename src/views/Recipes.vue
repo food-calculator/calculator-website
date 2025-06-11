@@ -9,7 +9,7 @@ export default defineComponent({
   data() {
     return {
       editor: false,
-      recipeID: -1
+      recipeID: 0
     }
   },
   methods: {
@@ -23,7 +23,7 @@ export default defineComponent({
 
 <template>
   <RecipeList v-if="!this.editor" :editor-caller="this.callEditor"/>
-  <RecipeEditor v-if="editor"/>
+  <RecipeEditor v-if="editor" :recipeID="this.recipeID"/>
 </template>
 
 <style scoped></style>

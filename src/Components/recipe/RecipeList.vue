@@ -35,7 +35,7 @@ export default defineComponent({
     </tbody>
   </table>
   <br>
-  <button>Neues Rezept</button>
+  <button @click="this.editorCaller(-1)">Neues Rezept</button>
 </template>
 
 <style scoped>
