@@ -1,21 +1,54 @@
 <script>
 import {useIngredientStore} from "@/stores/IngredientStore.js";
+import MCDialog from "@/Components/MultipleChoiceDialog.vue";
+import {API} from "@/config.json"
 
 let ingredientStore = useIngredientStore()
 
 export default {
+  components: {MCDialog},
   data() {
     return {
       ingredients: ingredientStore.ingredients,
       ingredientName: "",
-      ingredientUnit: ""
+      ingredientUnit: "",
+      deleteDialog: false,
+      deleteMessage: "",
+      deleteID: ""
     }
   }, methods: {
+    requestDelete(id) {
+      this.deleteID = id
+      this.deleteMessage = `Lösche Zutat "${ingredientStore.ingredients[id].name}"`
+      this.deleteDialog = true
+    },
+    delete(id, option) {
+      this.deleteDialog = false
+      console.log(`Delete ${id}: ${option}`)
+      if (option !== "delete") return;
+      const urlEncoded = new URLSearchParams()
+      urlEncoded.append("id", id)
+
+      fetch(API + "/ingredients/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: urlEncoded,
+        redirect: "follow"
+      })
+          .then((response) => response.json())
+          .then((json) => {
+            if (json["status"] === "SUCCESS") {
+              delete ingredientStore.ingredients[this.deleteID]
+            }
+          })
+    },
     submit() {
       const body = JSON.stringify({id: -1, name: this.ingredientName, unit: this.ingredientUnit})
       console.log(body)
 
-      fetch("https://calc.bitea.de/api/ingredients/add", {
+      fetch(API + "/ingredients/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -57,7 +90,7 @@ export default {
     <tr v-for="ingredient in this.ingredients">
       <td>{{ ingredient.name }}</td>
       <td>{{ ingredient.unit }}</td>
-      <td>🗑️</td>
+      <td @click="requestDelete(ingredient.id)">🗑️</td>
     </tr>
     <tr>
       <td><input type="text" placeholder="Name" v-model="ingredientName"></td>
@@ -66,6 +99,8 @@ export default {
     </tbody>
   </table>
   <button @click="submit">Speichern</button>
+  <MCDialog v-if="this.deleteDialog" :message="this.deleteMessage" :options="[{display: 'Ja', action: 'delete'}, {display: 'Nein', action: 'keep'}]"
+            :forward-param="this.deleteID" :action="this.delete"/>
 </template>
 
 <style scoped>
@@ -93,6 +128,11 @@ tr:not(:last-child) td:last-child {
   visibility: hidden;
   background: var(--color-background);
   cursor: pointer;
+}
+
+tr:not(:last-child) td:last-child:hover {
+  color: transparent;
+  text-shadow: 0 0 0 red;
 }
 
 tr:hover td:last-child {
