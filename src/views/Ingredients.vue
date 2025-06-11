@@ -29,7 +29,7 @@ export default {
       const urlEncoded = new URLSearchParams()
       urlEncoded.append("id", id)
 
-      fetch(API + "/ingredients/delete", {
+      fetch(API + "/ingredients/remove", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
