@@ -2,6 +2,7 @@
 import {defineComponent} from 'vue'
 import {useRecipeStore} from "@/stores/RecipeStore.js";
 import {useIngredientStore} from "@/stores/IngredientStore.js";
+import {API} from "@/config.json"
 
 const recipeStore = useRecipeStore()
 const ingredientStore = useIngredientStore()
@@ -22,17 +23,34 @@ export default defineComponent({
         images: []
       } : recipeStore.recipes[this.recipeID],
       ingredients: ingredientStore.ingredients,
+      newIngredientID: 0
     }
   },
   methods: {
-    addIngredient(id) {
-
+    updateNewIngredientID(e) {
+      this.newIngredientID = e.target.selectedOptions[0].getAttribute('data-ingredientID')
+    },
+    addIngredient() {
+      this.recipe.ingredients.push({
+        ingredientID: this.newIngredientID,
+        quantity: 0
+      })
     },
     removeIngredient(id) {
-
+      console.log(id)
+      console.log(JSON.stringify(this.recipe.ingredients))
+      this.recipe.ingredients.splice(id, 1)
+      console.log(JSON.stringify(this.recipe.ingredients))
     },
     save() {
-
+      fetch(API + "/recipes/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(this.recipe),
+        redirect: "follow"
+      })
     }
   }
 })
@@ -68,22 +86,26 @@ export default defineComponent({
       <div class="inputContainer" id="ingredientContainer">
         <p>Zutaten</p>
         <div id="ingredientList">
-          <div v-for="ingredient in this.recipe.ingredients" class="ingredient">
-            <span>❌</span>
-            <p>{{ ingredient.name }}, {{ this.ingredients[ingredient["ingredientID"]]["unit"] }}</p>
-            <input type="number">
+          <div v-for="(ingredient, index) in this.recipe.ingredients" class="ingredient">
+            <span @click="this.removeIngredient(index)">🗑️</span>
+            <p>{{ this.ingredients[ingredient["ingredientID"]]["name"] }},
+              {{ this.ingredients[ingredient["ingredientID"]]["unit"] }}</p>
+            <input type="number" v-model="ingredient.quantity">
           </div>
           <div class="ingredient">
             <label for="selectIngredient">Zutat: </label>
-            <select name="selectIngredient">
+            <select name="selectIngredient"
+                    v-on:change="this.updateNewIngredientID">
               <optgroup label="Erstellen">
                 <option>Neue Zutat</option>
               </optgroup>
               <optgroup label="Zutaten">
-                <option v-for="ingredient in this.ingredients">{{ ingredient.name }}</option>
+                <option v-for="ingredient in this.ingredients" :data-ingredientID="ingredient.id">
+                  {{ ingredient.name }}
+                </option>
               </optgroup>
             </select>
-            <input type="button" value="Hinzufügen">
+            <input @click="this.addIngredient()" type="button" value="Hinzufügen">
           </div>
         </div>
       </div>
@@ -161,11 +183,17 @@ div:has(.inputContainer) {
 }
 
 .ingredient span {
-  color: red;
   font-size: 1.5em;
   line-height: 1em;
   cursor: pointer;
 }
 
+.ingredient span:hover {
+  color: transparent;
+  text-shadow: 0 0 0 red;
+  font-size: 1.5em;
+  line-height: 1em;
+  cursor: pointer;
+}
 
 </style>
