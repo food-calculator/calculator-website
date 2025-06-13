@@ -1,5 +1,4 @@
 import {defineStore} from "pinia";
-import {ref} from "vue";
 import {API} from "@/config.json"
 
 export const useRecipeStore = defineStore("recipes", {
@@ -12,6 +11,8 @@ export const useRecipeStore = defineStore("recipes", {
 
 export function fetchRecipes() {
     const recipeStore = useRecipeStore()
+    recipeStore.recipes = {}
+    recipeStore.recipes = {}
     fetch(`${API}/recipes/list`)
         .then(response => response.json())
         .then(json => {

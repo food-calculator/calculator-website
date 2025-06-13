@@ -1,56 +1,150 @@
 <script lang="js">
 import {defineComponent} from 'vue'
-import {useRecipeStore} from "@/stores/RecipeStore.js";
+import {fetchRecipes} from "@/stores/RecipeStore.js";
 import {useIngredientStore} from "@/stores/IngredientStore.js";
 import {API} from "@/config.json"
+import MCDialog from "@/Components/MultipleChoiceDialog.vue";
 
-const recipeStore = useRecipeStore()
 const ingredientStore = useIngredientStore()
 
 export default defineComponent({
   name: "RecipeEditor",
-  props: ["recipeID"],
+  components: {MCDialog},
+  props: ["recipeID", "listViewCaller"],
   data() {
     return {
       newRecipe: this.recipeID === -1,
-      recipe: this.recipeID === -1 ? {
+      recipe: {
+        id: -1,
         name: "",
         minimumAge: 0,
         timeExpenditure: "",
-        portions: 10,
+        portionSize: 10,
         description: "",
         ingredients: [],
         images: []
-      } : recipeStore.recipes[this.recipeID],
+      },
       ingredients: ingredientStore.ingredients,
-      newIngredientID: 0
+      newIngredientID: 0,
+      deleteDialog: false,
     }
   },
+  beforeMount() {
+    if (this.recipeID === -1) return
+
+    fetch(API + `/recipes/get?id=${btoa(this.recipeID)}`, {
+      method: "GET",
+      redirect: "follow"
+    })
+        .then(response => response.json())
+        .then(json => {
+          this.recipe = json
+        })
+        .catch(error => {
+          console.error(error)
+          alert(error)
+        })
+
+  }
+  ,
   methods: {
     updateNewIngredientID(e) {
       this.newIngredientID = e.target.selectedOptions[0].getAttribute('data-ingredientID')
-    },
+    }
+    ,
     addIngredient() {
       this.recipe.ingredients.push({
         ingredientID: this.newIngredientID,
         quantity: 0
       })
-    },
+    }
+    ,
     removeIngredient(id) {
       console.log(id)
       console.log(JSON.stringify(this.recipe.ingredients))
       this.recipe.ingredients.splice(id, 1)
       console.log(JSON.stringify(this.recipe.ingredients))
-    },
+    }
+    ,
     save() {
-      fetch(API + "/recipes/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(this.recipe),
-        redirect: "follow"
-      })
+      const body = JSON.stringify(this.recipe)
+      console.log(body)
+      if (this.newRecipe) {
+        fetch(API + "/recipes/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: body,
+          redirect: "follow"
+        })
+            .then(response => response.json())
+            .then(json => {
+              console.log(json)
+              if (json["status"] === "SUCCESS") {
+                fetchRecipes()
+                this.listViewCaller()
+              } else {
+                alert(json["message"])
+              }
+            })
+            .catch(error => {
+              console.error(error)
+              alert(error)
+            })
+      } else {
+        fetch(API + "/recipes/update", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: body,
+          redirect: "follow"
+        })
+            .then(response => response.json())
+            .then(json => {
+              console.log(json)
+              if (json["status"] === "SUCCESS") {
+                fetchRecipes()
+                this.listViewCaller()
+              } else {
+                alert(json["message"])
+              }
+            })
+            .catch(error => {
+              console.error(error)
+              alert(error)
+            })
+      }
+    },
+    removeRecipe(action) {
+      console.log(action)
+      if (action === "delete") {
+        fetch(API + `/recipes/remove`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: new URLSearchParams({id: this.recipeID}),
+          redirect: "follow"
+        })
+            .then(response => response.json())
+            .then(json => {
+              if (json["status"] === "SUCCESS") {
+                console.log("Recipe deleted: " + this.recipeID)
+                fetchRecipes()
+                this.listViewCaller()
+              } else {
+                alert(json["message"])
+              }
+            })
+            .catch(error => {
+              console.error(error)
+              alert(error)
+            })
+      } else {
+        this.deleteDialog = false
+      }
     }
   }
 })
@@ -75,7 +169,7 @@ export default defineComponent({
       </div>
       <div class="inputContainer">
         <p>Portionsgröße</p>
-        <input type="number" v-model="this.recipe.portions">
+        <input type="number" v-model="this.recipe.portionSize">
       </div>
     </div>
     <div>
@@ -113,9 +207,13 @@ export default defineComponent({
   </div>
   <div id="descriptionContainer">
     <p>Beschreibung</p>
-    <textarea cols="40" rows="3"/>
+    <textarea v-model="this.recipe.description" cols="40" rows="3"/>
   </div>
-  <button id="save" @click="save">Speichern</button>
+  <button id="save" @click="save">{{ this.newRecipe ? "Erstellen" : "Speichern" }}</button>
+  <button v-if="!this.newRecipe" id="delete" @click="this.deleteDialog = true">Löschen</button>
+  <MCDialog v-if="this.deleteDialog" message="Rezept Löschen"
+            :options="[{display: 'Ja', submit: 'delete'}, {display: 'Nein', submit: 'keep'}]"
+            :action="this.removeRecipe"/>
 </template>
 
 <style scoped>

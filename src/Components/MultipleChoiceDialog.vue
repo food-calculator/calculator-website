@@ -1,7 +1,16 @@
 <script>
 export default {
   props: ["message", "options", "action", "forwardParam"],
-  name: "MC-Dialog"
+  name: "MC-Dialog",
+  methods: {
+    submit(action) {
+      console.log(action)
+      if (this.forwardParam == null)
+        this.action(action)
+      else
+        this.action(this.forwardParam, action)
+    }
+  }
 }
 </script>
 
@@ -11,7 +20,7 @@ export default {
       <h3>{{ this.message }}</h3>
       <br />
       <div id="buttons">
-        <button v-for="option in this.options" @click="this.action(this.forwardParam, option.action)">{{ option.display }}</button>
+        <button v-for="option in this.options" @click="this.submit(option.submit)">{{ option.display }}</button>
       </div>
     </div>
   </div>
