@@ -37,8 +37,10 @@ export default {
         body: urlEncoded,
         redirect: "follow"
       })
-          .then((response) => response.json())
-          .then((json) => {
+          .then((response) => response.text())
+          .then((text) => {
+            console.log(text)
+            const json = JSON.parse(text)
             if (json["status"] === "SUCCESS") {
               delete ingredientStore.ingredients[this.deleteID]
             }
@@ -56,8 +58,10 @@ export default {
         body: body,
         redirect: "follow"
       })
-          .then((response) => response.json())
-          .then((json) => {
+          .then((response) => response.text())
+          .then((text) => {
+            console.log(text)
+            const json = JSON.parse(text)
             console.log(json)
             if (json["status"] === "SUCCESS") {
               ingredientStore.ingredients[json["message"]["id"]] = json["message"]
