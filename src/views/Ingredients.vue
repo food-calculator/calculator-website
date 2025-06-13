@@ -104,7 +104,7 @@ export default {
   </table>
   <button @click="submit">Speichern</button>
   <MCDialog v-if="this.deleteDialog" :message="this.deleteMessage"
-            :options="[{display: 'Ja', action: 'delete'}, {display: 'Nein', action: 'keep'}]"
+            :options="[{display: 'Ja', submit: 'delete'}, {display: 'Nein', submit: 'keep'}]"
             :forward-param="this.deleteID" :action="this.delete"/>
 </template>
 

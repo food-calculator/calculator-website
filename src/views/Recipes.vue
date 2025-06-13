@@ -16,6 +16,10 @@ export default defineComponent({
     callEditor(recipeID) {
       this.recipeID = recipeID
       this.editor = true
+    },
+    callListView() {
+      this.editor = false
+      this.recipeID = 0
     }
   }
 })
@@ -23,7 +27,7 @@ export default defineComponent({
 
 <template>
   <RecipeList v-if="!this.editor" :editor-caller="this.callEditor"/>
-  <RecipeEditor v-if="editor" :recipeID="this.recipeID"/>
+  <RecipeEditor v-if="editor" :recipeID="this.recipeID" :listViewCaller="this.callListView"/>
 </template>
 
 <style scoped></style>
