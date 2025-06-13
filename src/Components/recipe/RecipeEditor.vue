@@ -4,12 +4,13 @@ import {fetchRecipes} from "@/stores/RecipeStore.js";
 import {useIngredientStore} from "@/stores/IngredientStore.js";
 import {API} from "@/config.json"
 import MCDialog from "@/Components/MultipleChoiceDialog.vue";
+import ImgUploader from "@/Components/img/ImgUploader.vue";
 
 const ingredientStore = useIngredientStore()
 
 export default defineComponent({
   name: "RecipeEditor",
-  components: {MCDialog},
+  components: {ImgUploader, MCDialog},
   props: ["recipeID", "listViewCaller"],
   data() {
     return {
@@ -27,6 +28,7 @@ export default defineComponent({
       ingredients: ingredientStore.ingredients,
       newIngredientID: 0,
       deleteDialog: false,
+      API: API
     }
   },
   beforeMount() {
@@ -173,10 +175,6 @@ export default defineComponent({
       </div>
     </div>
     <div>
-      <div class="inputContainer">
-        <p>Bilder</p>
-        <p><b>TODO</b></p>
-      </div>
       <div class="inputContainer" id="ingredientContainer">
         <p>Zutaten</p>
         <div id="ingredientList">
@@ -203,14 +201,29 @@ export default defineComponent({
           </div>
         </div>
       </div>
+      <div class="inputContainer" id="imageContainer">
+        <p>Bilder</p>
+        <details>
+          <summary>Ausklappen</summary>
+          <div class="inputContainer" id="imageList">
+            <div v-for="image in this.recipe.images" class="image">
+              <img :src="API + '/images/get?id=' + image" alt=""/>
+              <button @click="this.recipe.images.splice(this.recipe.images.indexOf(image), 1)">Delete</button>
+            </div>
+            <ImgUploader upload-path="/images/upload" :callback="id => this.recipe.images.push(id)"/>
+          </div>
+        </details>
+      </div>
     </div>
   </div>
   <div id="descriptionContainer">
     <p>Beschreibung</p>
     <textarea v-model="this.recipe.description" cols="40" rows="3"/>
   </div>
-  <button id="save" @click="save">{{ this.newRecipe ? "Erstellen" : "Speichern" }}</button>
-  <button v-if="!this.newRecipe" id="delete" @click="this.deleteDialog = true">Löschen</button>
+  <div id="formularButtonContainer">
+    <button class="formularButton" @click="save">{{ this.newRecipe ? "Erstellen" : "Speichern" }}</button>
+    <button class="formularButton" v-if="!this.newRecipe" id="delete" @click="this.deleteDialog = true">Löschen</button>
+  </div>
   <MCDialog v-if="this.deleteDialog" message="Rezept Löschen"
             :options="[{display: 'Ja', submit: 'delete'}, {display: 'Nein', submit: 'keep'}]"
             :action="this.removeRecipe"/>
@@ -226,11 +239,11 @@ h2 {
   width: max-content;
 }
 
-#save {
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 30px;
+#formularButtonContainer {
+  width: max-content;
+  display: flex;
+  gap: 20px;
+  margin: 30px auto;
 }
 
 #descriptionContainer p {
@@ -254,7 +267,7 @@ div:has(.inputContainer) {
   gap: 30px;
 }
 
-#ingredientContainer {
+#ingredientContainer, #imageContainer {
   flex-direction: column;
   gap: 10px;
   border: 1px solid var(--color-border);
@@ -262,14 +275,14 @@ div:has(.inputContainer) {
   border-radius: 10px;
 }
 
-#ingredientList {
+#ingredientList, #imageList {
   display: flex;
   flex-direction: column;
   gap: 10px;
   flex-wrap: wrap;
 }
 
-.ingredient {
+.ingredient, .image {
   border: 1px solid var(--color-border);
   border-radius: 5px;
   padding: 5px;
@@ -292,6 +305,17 @@ div:has(.inputContainer) {
   font-size: 1.5em;
   line-height: 1em;
   cursor: pointer;
+}
+
+#imageList img {
+  max-width: 10em;
+  max-height: 10em;
+}
+
+.image button {
+  height: max-content;
+  margin: auto 0;
+  vertical-align: middle;
 }
 
 </style>
