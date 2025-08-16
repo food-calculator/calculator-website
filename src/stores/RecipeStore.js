@@ -12,7 +12,6 @@ export const useRecipeStore = defineStore("recipes", {
 export function fetchRecipes() {
     const recipeStore = useRecipeStore()
     recipeStore.recipes = {}
-    recipeStore.recipes = {}
     fetch(`${API}/recipes/list`)
         .then(response => response.json())
         .then(json => {

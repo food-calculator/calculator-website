@@ -11,6 +11,7 @@ export const useIngredientStore = defineStore("ingredients", {
 
 export function fetchIngredients() {
     const ingredientStore = useIngredientStore()
+    ingredientStore.ingredients = {}
     fetch(`${API}/ingredients/list`)
         .then(response => response.json())
         .then(json => {

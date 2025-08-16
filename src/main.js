@@ -6,6 +6,7 @@ import {createRouter, createWebHashHistory} from "vue-router";
 import {fetchIngredients} from "@/stores/IngredientStore.js";
 import {createPinia} from "pinia";
 import {fetchRecipes} from "@/stores/RecipeStore.js";
+import {fetchCateringPlans} from "@/stores/CateringStore.js";
 
 const pinia = createPinia()
 
@@ -30,7 +31,15 @@ const router = createRouter({
         },
         {
             path: "/plans",
-            component: () => import('./views/Plans.vue')
+            component: () => import("./views/CateringList.vue")
+        },
+        {
+            path: "/plans/edit",
+            component: () => import("./views/CateringEditor.vue")
+        },
+        {
+            path: "/plans/create",
+            component: () => import("./views/CateringCreator.vue")
         }
     ]
 })
@@ -39,3 +48,4 @@ createApp(App).use(router).use(pinia).mount('#app')
 
 fetchIngredients()
 fetchRecipes()
+fetchCateringPlans()

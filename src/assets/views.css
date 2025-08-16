@@ -17,6 +17,8 @@ th {
 td {
     border-bottom: 1px solid var(--color-border);
     text-align: center;
+    padding-left: 7px;
+    padding-right: 7px;
 }
 
 tr:last-child td {
